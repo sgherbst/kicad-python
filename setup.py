@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 import setuptools
 
-reqs = open('requirements.txt', 'r').read().splitlines()
+try:
+    reqs = open('requirements.txt', 'r').read().splitlines()
+except IOError:
+    reqs = []
 
 setuptools.setup(
         name='kicad',
