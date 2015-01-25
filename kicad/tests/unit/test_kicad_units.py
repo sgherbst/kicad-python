@@ -3,21 +3,36 @@ import unittest
 from kicad import *
 
 
-class TestUnits(unittest.TestCase):
+class TestKicadUnits(unittest.TestCase):
 
-    def test_with_units(self):
-        with units(MM):
-            self.assertEqual(current_units(), MM)
-            with units(INCHES):
-                self.assertEqual(current_units(), INCHES)
-            self.assertEqual(current_units(), MM)
+    def test_converters(self):
+        self.assertEqual(inch_to_mm(1), 25.4)
+        self.assertEqual(mm_to_inch(25.4), 1.0)
 
-    @with_units(MM)
-    def _decorated_test(self):
-        self.assertEqual(current_units(), MM)
+    def test_converters_seq(self):
+        self.assertEqual(inch_to_mm([1, 2]), [25.4, 50.8])
+        self.assertEqual(mm_to_inch([25.4, 50.8]), [1.0, 2.0])
 
-    def test_with_and_decorator(self):
-        with units(INCHES):
-            self.assertEqual(current_units(), INCHES)
-            self._decorated_test()
-            self.assertEqual(current_units(), INCHES)
+    def test_base_unit_tuple_mm(self):
+        bunit = BaseUnitTuple()
+        bunit.x = 1
+        bunit.y = 2
+        self.assertEqual(bunit.mm, (1.0, 2.0))
+
+    def test_base_unit_tuple_inch(self):
+        bunit = BaseUnitTuple()
+        bunit.x = 1 * inch
+        bunit.y = 2 * inch
+        self.assertEqual(bunit.inch, (1.0, 2.0))
+
+    def test_base_unit_tuple_mil(self):
+        bunit = BaseUnitTuple()
+        bunit.x = 1 * mil
+        bunit.y = 2 * mil
+        self.assertEqual(bunit.mil, (1.0, 2.0))
+
+    def test_base_unit_tuple_nm(self):
+        bunit = BaseUnitTuple()
+        bunit.x = 1 * nm
+        bunit.y = 2 * nm
+        self.assertEqual(bunit.nm, (1, 2))
