@@ -1,4 +1,4 @@
-#  Copyright 2015 Miguel Angel Ajo Pelayo <miguelangel@ajo.es>
+#  Copyright 2015 Piers Titus van der Torren
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,73 +15,122 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 #
+import math
 
-import kicad.exceptions
+nm = 0.000001
+mm = 1.0
+inch = 25.4
+mil = 0.25400
+
+nm_ius = 1
+mm_ius = 1000000
+inch_ius = 254000000
+mil_ius = 25400
+
+deg = 1.0
+rad = 180.0 / math.pi
+
+DEFAULT_UNIT_IUS = mm_ius
 
 
-MM = 0
-INCHES = 1
-IU = 2
-CONTEXT = -1
+def inch_to_mm(val):
+    """Convert from inch to mm.
 
-
-def units(type_of_units):
-    """Helper to build unit contexts to work with kicad objects.
-
-    This helper is used to define a context for units, to avoid
-    explicitly passing the type of unit on every call when we
-    want to work with a certain unit.
-
-    Example:
-        with unit(MM):
-            point = Point(1.0, 1.0)
-            size = Size(1.0, 2.0)
+    Handles single values, sequences, sequences of sequences, etc.
     """
-    return _UnitContext(type_of_units)
+    try:
+        return val * 25.4
+    except TypeError:
+        return [inch_to_mm(v) for v in val]
 
 
-def with_units(type_of_units):
-    """Decorator to declare which units a function will use.
+def mm_to_inch(val):
+    """Convert from mm to inch.
 
-    This helper is used to define the unit context for a certain
-    function when manipulating or creating kicad objects.
-
-    Example:
-        @with_units(MM)
-        def my_function(pcb):
-            pcb.new_module("M1", position=Point(50, 50))
+    Handles single values, sequences, sequences of sequences, etc.
     """
-
-    def units_decorator(function):
-        def wrapper(*args, **kwargs):
-            with units(type_of_units):
-                function(*args, **kwargs)
-        return wrapper
-    return units_decorator
+    try:
+        return val / 25.4
+    except TypeError:
+        return [mm_to_inch(v) for v in val]
 
 
-def current_units():
-    return _UnitContext.current_units()
+class BaseUnitTuple:
+    """Base class to provide mm, inch, mil properties.
 
+    It's a class to be used just by Point and Size.
+    """
+    @property
+    def x(self):
+        return float(self._wxobj.x) / DEFAULT_UNIT_IUS
 
-class _UnitContext:
-    context_stack = []
+    @x.setter
+    def x(self, value):
+        self._wxobj.x = value * DEFAULT_UNIT_IUS
 
-    def __init__(self, type_of_unit):
-        self.unit = type_of_unit
+    @property
+    def y(self):
+        return float(self._wxobj.y) / DEFAULT_UNIT_IUS
+
+    @y.setter
+    def y(self, value):
+        self._wxobj.y = value * DEFAULT_UNIT_IUS
+
+    def __getitem__(self, index):
+        return self.mm[index]
+
+    def __setitem__(self, index, value):
+        if index == 0:
+            self.x = value
+        elif index == 1:
+            self.y = value
+        else:
+            raise IndexError
+
+    def __sub__(self, b):
+        return self._class(self._wxobj - b._wxobj)
+
+    def __add__(self, b):
+        return self._class(self._wxobj + b._wxobj)
+
+    def __eq__(self, other):
+        return (self._wxobj == other._wxobj)
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __len__(self):
+        return len(self._wxobj)
+
+    def _unit_tuple(self, unit_multiplier):
+        unit_multiplier_float = float(unit_multiplier)
+        return (self.x / unit_multiplier_float,
+                self.y / unit_multiplier_float)
+
+    @property
+    def nm(self):
+        return self._unit_tuple(nm)
+
+    @property
+    def mm(self):
+        """Get the milimeters tuple."""
+        return (self.x, self.y)
+
+    @property
+    def inch(self):
+        """Get the inches tuple."""
+        return self._unit_tuple(inch)
+
+    @property
+    def mil(self):
+        """Get the mils tuple."""
+        return self._unit_tuple(mil)
 
     @staticmethod
-    def current_units():
-        try:
-            return _UnitContext.context_stack[-1]
-        except IndexError:
-            raise kicad.exceptions.NoDefaultUnits(
-                "You're trying to use units without a context/default, "
-                "please decorate your main @with_units(xxx) or use "
-                "with units(xxx): in your code")
-
-    def __enter__(self):
-        _UnitContext.context_stack.append(self.unit)
-
-    def __exit__(self, type, value, traceback):
-        _UnitContext.context_stack.pop()
+    def _tuple_to_class(v, cls):
+        if type(v) == cls:
+            return v
+        elif type(v) == tuple:
+            if len(v) != 2:
+                raise TypeError("A point parameter must be a 2 value tuple")
+        return cls(v[0], v[1])

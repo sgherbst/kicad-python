@@ -17,3 +17,5 @@
 #
 
 from .units import *
+from .point import *
+from .size import *
