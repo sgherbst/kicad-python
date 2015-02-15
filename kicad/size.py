@@ -28,10 +28,14 @@ class Size(BaseUnitTuple):
         self._class = Size
         if len(args) == 2:
             x, y = args
-            self._wxobj = pcbnew.wxSize(x * units.DEFAULT_UNIT_IUS,
-                                        y * units.DEFAULT_UNIT_IUS)
+            self._size = pcbnew.wxSize(x * units.DEFAULT_UNIT_IUS,
+                                       y * units.DEFAULT_UNIT_IUS)
         else:
-            self._wxobj = args[0]
+            self._size = args[0]
+
+    @property
+    def native_obj(self):
+        return self._size
 
     def __str__(self):
         return self.__repr__()

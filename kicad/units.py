@@ -62,19 +62,19 @@ class BaseUnitTuple:
     """
     @property
     def x(self):
-        return float(self._wxobj.x) / DEFAULT_UNIT_IUS
+        return float(self.native_obj.x) / DEFAULT_UNIT_IUS
 
     @x.setter
     def x(self, value):
-        self._wxobj.x = value * DEFAULT_UNIT_IUS
+        self.native_obj.x = value * DEFAULT_UNIT_IUS
 
     @property
     def y(self):
-        return float(self._wxobj.y) / DEFAULT_UNIT_IUS
+        return float(self.native_obj.y) / DEFAULT_UNIT_IUS
 
     @y.setter
     def y(self, value):
-        self._wxobj.y = value * DEFAULT_UNIT_IUS
+        self.native_obj.y = value * DEFAULT_UNIT_IUS
 
     def __getitem__(self, index):
         return self.mm[index]
@@ -88,19 +88,19 @@ class BaseUnitTuple:
             raise IndexError
 
     def __sub__(self, b):
-        return self._class(self._wxobj - b._wxobj)
+        return self._class(self.native_obj - b.native_obj)
 
     def __add__(self, b):
-        return self._class(self._wxobj + b._wxobj)
+        return self._class(self.native_obj + b.native_obj)
 
     def __eq__(self, other):
-        return (self._wxobj == other._wxobj)
+        return (self.native_obj == other.native_obj)
 
     def __ne__(self, other):
         return not (self == other)
 
     def __len__(self):
-        return len(self._wxobj)
+        return len(self.native_obj)
 
     def _unit_tuple(self, unit_multiplier):
         unit_multiplier_float = float(unit_multiplier)

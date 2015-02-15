@@ -29,10 +29,10 @@ class Point(units.BaseUnitTuple):
         self._class = Point
         if len(args) == 2:
             x, y = args
-            self._wxobj = pcbnew.wxPoint(x * units.DEFAULT_UNIT_IUS,
+            self._point = pcbnew.wxPoint(x * units.DEFAULT_UNIT_IUS,
                                          y * units.DEFAULT_UNIT_IUS)
         else:
-            self._wxobj = args[0]
+            self._point = args[0]
 
     def __str__(self):
         return self.__repr__()
@@ -43,6 +43,10 @@ class Point(units.BaseUnitTuple):
     @staticmethod
     def from_tuple(t):
         return Point._tuple_to_class(t, Point)
+
+    @property
+    def native_obj(self):
+        return self._point
 
     def rotate(self, angle, around=(0, 0)):
         self.x, self.y = self._rotated(angle, around)
