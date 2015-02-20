@@ -30,8 +30,8 @@ class Track(object):
             self._track.SetLayer(board.get_layer(layer))
         else:
             self._track.SetLayer(pcbnew_layer.get_std_layer(layer))
-        self._track.SetStart(Point.from_tuple(start).native_obj)
-        self._track.SetEnd(Point.from_tuple(end).native_obj)
+        self._track.SetStart(Point.native_from(start))
+        self._track.SetEnd(Point.native_from(end))
 
     @property
     def native_obj(self):

@@ -26,8 +26,8 @@ class Segment(object):
     def __init__(self, start, end, layer='F.SilkS', width=0.15, board=None):
         self._line = pcbnew.DRAWSEGMENT(board and board.native_obj)
         self._line.SetShape(pcbnew.S_SEGMENT)
-        self._line.SetStart(Point.from_tuple(start).native_obj)
-        self._line.SetEnd(Point.from_tuple(end).native_obj)
+        self._line.SetStart(Point.native_from(start))
+        self._line.SetEnd(Point.native_from(end))
         if board:
             self._line.SetLayer(board.get_layer(layer))
         else:
@@ -41,7 +41,22 @@ class Segment(object):
 
 
 class Circle(object):
-    pass
+    def __init__(self, center, radius, layer, width, board=None):
+        self._circle = pcbnew.DRAWSEGMENT(board and board.native_obj)
+        self._circle.SetShape(pcbnew.S_CIRCLE)
+        self._circle.SetCenter(Point.native_from(center))
+        start_coord = Point.native_from(
+            (center[0], center[1] + radius))
+        self._circle.SetArcStart(start_coord)
+        if board:
+            self._circle.SetLayer(board.get_layer(layer))
+        else:
+            self._circle.SetLayer(pcbnew_layer.get_std_layer(layer))
+        self._circle.SetWidth(int(width * units.DEFAULT_UNIT_IUS))
+
+    @property
+    def native_obj(self):
+        return self._circle
 
 
 class Arc(object):

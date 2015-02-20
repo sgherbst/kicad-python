@@ -41,8 +41,12 @@ class Point(units.BaseUnitTuple):
         return "Point(%g, %g)" % (self.x, self.y)
 
     @staticmethod
-    def from_tuple(t):
+    def build_from(t):
         return Point._tuple_to_class(t, Point)
+
+    @staticmethod
+    def native_from(t):
+        return Point._tuple_to_class(t, Point).native_obj
 
     @property
     def native_obj(self):
@@ -57,7 +61,7 @@ class Point(units.BaseUnitTuple):
 
     def _rotated(self, angle, around=(0, 0)):
         """Rotate coordinate around another point"""
-        around = Point.from_tuple(around)
+        around = Point.build_from(around)
         p0 = self - around
         coord = (p0.x + p0.y * 1j) * cmath.exp((angle / units.rad) * 1j)
         return (coord.real + around.x, coord.imag + around.y)

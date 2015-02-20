@@ -39,6 +39,7 @@ class Board(object):
 
     def add(self, obj):
         self._board.Add(obj.native_obj)
+        return obj
 
     @property
     def modules(self):
@@ -67,24 +68,11 @@ class Board(object):
 
     def create_module(self, ref, position=(0, 0)):
         """Create new module on the board"""
-        return Module(ref, position, board=self)
-        #module = pcbnew.MODULE(self._board)
-        #module.SetReference(ref)
-        #module.SetPosition(Point._from_tuple(position))
-        #self._board.Add(module)
-        #return Module(module)
+        return self.add(Module(ref, position, board=self))
 
     def copy_module(self, original, ref, position=(0, 0)):
         """Create a copy of an existing module on the board"""
-        module = Module.copy(original, board=self)
-        self.add(module)
-        return module
-        #module = pcbnew.MODULE(self._board)
-        #module.Copy(original.module)
-        #module.SetReference(ref)
-        #module.SetPosition(Point._from_tuble(position))
-        #self._board.Add(module)
-        #return Module(module)
+        return self.add(Module.copy(original, board=self))
 
     @property
     def default_width(self, width=None):
@@ -137,24 +125,14 @@ class Board(object):
             size: size of via in mm, or None for current selection
             drill: size of drill in mm, or None for current selection
         """
-        via = Via(coord, layer_pair, size or self.default_via_size,
-                  drill or self.default_via_drill, board=self)
-        self.add(via)
-        return via
+        return self.add(
+            Via(coord, layer_pair, size or self.default_via_size,
+                drill or self.default_via_drill, board=self))
 
     def add_line(self, start, end, layer='F.SilkS', width=0.15):
         """Create a graphic line on the board"""
-        line = drawing.Segment(start, end, layer, width, board=self)
-        self.add(line)
-        return line
-        #a = pcbnew.DRAWSEGMENT(self._board)
-        #a.SetShape(pcbnew.S_SEGMENT)
-        #a.SetStart(Point._from_tuple(start))
-        #a.SetEnd(Point._from_tuple(end))
-        #a.SetLayer(_get_layer(layer))
-        #a.SetWidth(width * DEFAULT_UNIT_IUS)
-        #self._board.Add(a)
-        #return a
+        return self.add(
+            drawing.Segment(start, end, layer, width, board=self))
 
     def add_polyline(self, coords, layer='F.SilkS', width=0.15):
         """Create a graphic polyline on the board"""
@@ -163,24 +141,15 @@ class Board(object):
 
     def add_circle(self, center, radius, layer='F.SilkS', width=0.15):
         """Create a graphic circle on the board"""
-        return drawing.DrawCircle(center, radius, layer,
-                                  width, board=self)
-        #a = pcbnew.DRAWSEGMENT(self._board)
-        #a.SetShape(pcbnew.S_CIRCLE)
-        #a.SetCenter(Point._from_tuple(center))
-        #start_coord = Point._from_tuple((center[0], center[1]+radius))
-        #a.SetArcStart(start_coord)
-        #a.SetLayer(_get_layer(layer))
-        #a.SetWidth(width * DEFAULT_UNIT_IUS)
-        #a.SetLocalCoord()
-        #self._board.Add(a)
-        #return a
+        return self.add(
+            drawing.Circle(center, radius, layer, width, board=self))
 
     def add_arc(self, center, radius, start_angle, stop_angle,
                 layer='F.SilkS', width=0.15):
         """Create a graphic arc on the board"""
-        return drawing.DrawArc(center, radius, start_angle, stop_angle,
-                               layer, width, board=self)
+        return self.add(
+            drawing.Arc(center, radius, start_angle, stop_angle,
+                        layer, width, board=self))
         #start_coord = radius * cmath.exp(math.radians(start_angle-90)*1j)
         #start_coord = Point._from_tuple((start_coord.real, start_coord.imag))
         #

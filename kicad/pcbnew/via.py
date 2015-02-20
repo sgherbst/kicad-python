@@ -26,9 +26,9 @@ class Via(object):
     def __init__(self, coord, layer_pair, size, drill, board=None):
         self._via = pcbnew.VIA(board and board.native_obj)
         self._via.SetWidth(int(size * units.DEFAULT_UNIT_IUS))
-        coord_point = Point.from_tuple(coord)
-        self._via.SetEnd(Point.from_tuple(coord_point).native_obj)
-        self._via.SetStart(Point.from_tuple(coord_point).native_obj)
+        coord_point = Point.build_from(coord)
+        self._via.SetEnd(coord_point.native_obj)
+        self._via.SetStart(coord_point.native_obj)
         if board:
             self._via.SetLayerPair(board.get_layer(layer_pair[0]),
                                    board.get_layer(layer_pair[1]))

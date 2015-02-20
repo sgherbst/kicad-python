@@ -32,3 +32,11 @@ class TestPcbnewBoard(unittest.TestCase):
 
     def test_line_creation(self):
         self.board.add_line((0, 0), (1, 1))
+        self.board.add_line((0, 0), (1, 1), layer='B.SilkS')
+        self.board.add_line((0, 0), (1, 1), layer='B.SilkS', width=1)
+
+    def test_polyline_creation(self):
+        self.board.add_polyline([(0, 0), (1, 1), (2, 2)])
+
+    def test_add_circle(self):
+        self.board.add_circle((1, 1), 1)
