@@ -16,10 +16,21 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 #
+import cmath
+import math
+
 pcbnew = __import__('pcbnew')
+
 from kicad.pcbnew import layer as pcbnew_layer
 from kicad.point import Point
 from kicad import units
+
+
+def _get_board_layer(board, layer_name):
+    if board:
+        return board.get_layer(layer_name)
+    else:
+        return pcbnew_layer.get_std_layer(layer_name)
 
 
 class Segment(object):
@@ -28,11 +39,7 @@ class Segment(object):
         self._line.SetShape(pcbnew.S_SEGMENT)
         self._line.SetStart(Point.native_from(start))
         self._line.SetEnd(Point.native_from(end))
-        if board:
-            self._line.SetLayer(board.get_layer(layer))
-        else:
-            self._line.SetLayer(pcbnew_layer.get_std_layer(layer))
-
+        self._line.SetLayer(_get_board_layer(board, layer))
         self._line.SetWidth(int(width * units.DEFAULT_UNIT_IUS))
 
     @property
@@ -48,10 +55,7 @@ class Circle(object):
         start_coord = Point.native_from(
             (center[0], center[1] + radius))
         self._circle.SetArcStart(start_coord)
-        if board:
-            self._circle.SetLayer(board.get_layer(layer))
-        else:
-            self._circle.SetLayer(pcbnew_layer.get_std_layer(layer))
+        self._circle.SetLayer(_get_board_layer(board, layer))
         self._circle.SetWidth(int(width * units.DEFAULT_UNIT_IUS))
 
     @property
@@ -60,4 +64,20 @@ class Circle(object):
 
 
 class Arc(object):
-    pass
+    def __init__(self, center, radius, start_angle, stop_angle, layer, width,
+                 board=None):
+        start_coord = radius * cmath.exp(math.radians(start_angle - 90) * 1j)
+        start_coord = Point.native_from((start_coord.real, start_coord.imag))
+
+        angle = stop_angle - start_angle
+        self._arc = pcbnew.DRAWSEGMENT(board and board.native_obj)
+        self._arc.SetShape(pcbnew.S_ARC)
+        self._arc.SetCenter(Point.native_from(center))
+        self._arc.SetArcStart(start_coord)
+        self._arc.SetAngle(angle * 10)
+        self._arc.SetLayer(_get_board_layer(board, layer))
+        self._arc.SetWidth(int(width * units.DEFAULT_UNIT_IUS))
+
+    @property
+    def native_obj(self):
+        return self._arc

@@ -40,3 +40,6 @@ class TestPcbnewBoard(unittest.TestCase):
 
     def test_add_circle(self):
         self.board.add_circle((1, 1), 1)
+
+    def test_add_arc(self):
+        self.board.add_arc((0, 0), 5, 0, 90)

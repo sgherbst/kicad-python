@@ -150,17 +150,3 @@ class Board(object):
         return self.add(
             drawing.Arc(center, radius, start_angle, stop_angle,
                         layer, width, board=self))
-        #start_coord = radius * cmath.exp(math.radians(start_angle-90)*1j)
-        #start_coord = Point._from_tuple((start_coord.real, start_coord.imag))
-        #
-        #angle = stop_angle - start_angle
-        #a = pcbnew.DRAWSEGMENT(self._board)
-        #a.SetShape(pcbnew.S_ARC)
-        #a.SetCenter(Point._from_tuple(center))
-        #a.SetArcStart(start_coord)
-        #a.SetAngle(angle*10)
-        #a.SetLayer(_get_layer(layer))
-        #a.SetWidth(width * DEFAULT_UNIT_IUS)
-        #a.SetLocalCoord()
-        #self._board.Add(a)
-        #return a
