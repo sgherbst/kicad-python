@@ -15,20 +15,17 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 #
+pcbnew = __import__('pcbnew')
+from kicad.pcbnew import drawing as pcbnew_drawing
 
 
-class BareClass(object):
-    pass
+_WRAPPERS = [(pcbnew_drawing.WRAPPED_CLASSES, pcbnew_drawing.wrap)]
 
 
-def new(class_type):
-    """Returns an object of class without calling __init__.
+def wrap(instance):
+    """Returns a python wrapped object from a swig/C++ one."""
+    for classes, wrapper in _WRAPPERS:
+        if type(instance) in classes:
+            return wrapper(instance)
 
-    This could lead to inconsistent objects, use only when you
-    know what you're doing.
-    In kicad-python this is used to construct wrapper classes
-    before injecting the native object.
-    """
-    obj = BareClass()
-    obj.__class__ = class_type
-    return obj
+    raise ValueError("Class with no wrapper: %s" % type(instance))

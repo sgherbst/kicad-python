@@ -19,3 +19,21 @@
 from .units import *
 from .point import *
 from .size import *
+
+
+class BareClass(object):
+    pass
+
+
+def new(class_type, instance):
+    """Returns an object of class without calling __init__.
+
+    This could lead to inconsistent objects, use only when you
+    know what you're doing.
+    In kicad-python this is used to construct wrapper classes
+    before injecting the native object.
+    """
+    obj = BareClass()
+    obj.__class__ = class_type
+    obj._obj = instance
+    return obj

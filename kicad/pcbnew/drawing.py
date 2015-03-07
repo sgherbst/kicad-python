@@ -20,11 +20,14 @@ import cmath
 import math
 
 pcbnew = __import__('pcbnew')
+import kicad
+
 
 from kicad.pcbnew import layer as pcbnew_layer
 from kicad.point import Point
-from kicad import obj
 from kicad import units
+
+WRAPPED_CLASSES = [pcbnew.DRAWSEGMENT]
 
 
 def _get_board_layer(board, layer_name):
@@ -34,79 +37,67 @@ def _get_board_layer(board, layer_name):
         return pcbnew_layer.get_std_layer(layer_name)
 
 
+def wrap(instance):
+    if type(instance) is pcbnew.DRAWSEGMENT:
+        return _wrap_drawsegment(instance)
+
+
+def _wrap_drawsegment(instance):
+    obj_shape = instance.GetShape()
+
+    if obj_shape is pcbnew.S_SEGMENT:
+        return kicad.new(Segment, instance)
+
+    if obj_shape is pcbnew.S_CIRCLE:
+        return kicad.new(Circle, instance)
+
+    if obj_shape is pcbnew.S_ARC:
+        return kicad.new(Arc, instance)
+
+
 class Drawing(object):
-    @staticmethod
-    def from_native(instance):
-        if type(instance) is pcbnew.DRAWSEGMENT:
-            return Drawing._from_drawsegment(instance)
-
-        raise ValueError("Unsupported class %s" % instance.__repr__())
-
-    @staticmethod
-    def _from_drawsegment(instance):
-        obj_shape = instance.GetShape()
-
-        if obj_shape is pcbnew.S_SEGMENT:
-            segment = obj.new(Segment)
-            segment._line = instance
-            return segment
-
-        if obj_shape is pcbnew.S_CIRCLE:
-            circle = obj.instance(Circle)
-            circle._circle = instance
-            return circle
-
-        if obj_shape is pcbnew.S_ARC:
-            arc = obj.instance(Arc)
-            arc._arc = instance
-            return arc
+    @property
+    def native_obj(self):
+        return self._obj
 
 
 class Segment(Drawing):
     def __init__(self, start, end, layer='F.SilkS', width=0.15, board=None):
-        self._line = pcbnew.DRAWSEGMENT(board and board.native_obj)
-        self._line.SetShape(pcbnew.S_SEGMENT)
-        self._line.SetStart(Point.native_from(start))
-        self._line.SetEnd(Point.native_from(end))
-        self._line.SetLayer(_get_board_layer(board, layer))
-        self._line.SetWidth(int(width * units.DEFAULT_UNIT_IUS))
-
-    @property
-    def native_obj(self):
-        return self._line
+        line = pcbnew.DRAWSEGMENT(board and board.native_obj)
+        line.SetShape(pcbnew.S_SEGMENT)
+        line.SetStart(Point.native_from(start))
+        line.SetEnd(Point.native_from(end))
+        line.SetLayer(_get_board_layer(board, layer))
+        line.SetWidth(int(width * units.DEFAULT_UNIT_IUS))
+        self._obj = line
 
 
 class Circle(Drawing):
-    def __init__(self, center, radius, layer, width, board=None):
-        self._circle = pcbnew.DRAWSEGMENT(board and board.native_obj)
-        self._circle.SetShape(pcbnew.S_CIRCLE)
-        self._circle.SetCenter(Point.native_from(center))
+    def __init__(self, center, radius, layer='F.SilkS', width=0.15,
+                 board=None):
+        circle = pcbnew.DRAWSEGMENT(board and board.native_obj)
+        circle.SetShape(pcbnew.S_CIRCLE)
+        circle.SetCenter(Point.native_from(center))
         start_coord = Point.native_from(
             (center[0], center[1] + radius))
-        self._circle.SetArcStart(start_coord)
-        self._circle.SetLayer(_get_board_layer(board, layer))
-        self._circle.SetWidth(int(width * units.DEFAULT_UNIT_IUS))
-
-    @property
-    def native_obj(self):
-        return self._circle
+        circle.SetArcStart(start_coord)
+        circle.SetLayer(_get_board_layer(board, layer))
+        circle.SetWidth(int(width * units.DEFAULT_UNIT_IUS))
+        self._obj = circle
 
 
 class Arc(Drawing):
-    def __init__(self, center, radius, start_angle, stop_angle, layer, width,
-                 board=None):
+    def __init__(self, center, radius, start_angle, stop_angle,
+                 layer='F.SilkS', width=0.15, board=None):
         start_coord = radius * cmath.exp(math.radians(start_angle - 90) * 1j)
         start_coord = Point.native_from((start_coord.real, start_coord.imag))
 
         angle = stop_angle - start_angle
-        self._arc = pcbnew.DRAWSEGMENT(board and board.native_obj)
-        self._arc.SetShape(pcbnew.S_ARC)
-        self._arc.SetCenter(Point.native_from(center))
-        self._arc.SetArcStart(start_coord)
-        self._arc.SetAngle(angle * 10)
-        self._arc.SetLayer(_get_board_layer(board, layer))
-        self._arc.SetWidth(int(width * units.DEFAULT_UNIT_IUS))
-
-    @property
-    def native_obj(self):
-        return self._arc
+        arc = pcbnew.DRAWSEGMENT(board and board.native_obj)
+        arc.SetShape(pcbnew.S_ARC)
+        arc.SetCenter(Point.native_from(center))
+        arc.SetArcStart(start_coord)
+        arc.SetAngle(angle * 10)
+        arc.SetLayer(_get_board_layer(board, layer))
+        arc.SetWidth(int(width * units.DEFAULT_UNIT_IUS))
+        self._obj = arc
