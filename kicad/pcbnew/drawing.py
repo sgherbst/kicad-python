@@ -23,6 +23,7 @@ pcbnew = __import__('pcbnew')
 
 from kicad.pcbnew import layer as pcbnew_layer
 from kicad.point import Point
+from kicad import obj
 from kicad import units
 
 
@@ -33,7 +34,35 @@ def _get_board_layer(board, layer_name):
         return pcbnew_layer.get_std_layer(layer_name)
 
 
-class Segment(object):
+class Drawing(object):
+    @staticmethod
+    def from_native(instance):
+        if type(instance) is pcbnew.DRAWSEGMENT:
+            return Drawing._from_drawsegment(instance)
+
+        raise ValueError("Unsupported class %s" % instance.__repr__())
+
+    @staticmethod
+    def _from_drawsegment(instance):
+        obj_shape = instance.GetShape()
+
+        if obj_shape is pcbnew.S_SEGMENT:
+            segment = obj.new(Segment)
+            segment._line = instance
+            return segment
+
+        if obj_shape is pcbnew.S_CIRCLE:
+            circle = obj.instance(Circle)
+            circle._circle = instance
+            return circle
+
+        if obj_shape is pcbnew.S_ARC:
+            arc = obj.instance(Arc)
+            arc._arc = instance
+            return arc
+
+
+class Segment(Drawing):
     def __init__(self, start, end, layer='F.SilkS', width=0.15, board=None):
         self._line = pcbnew.DRAWSEGMENT(board and board.native_obj)
         self._line.SetShape(pcbnew.S_SEGMENT)
@@ -47,7 +76,7 @@ class Segment(object):
         return self._line
 
 
-class Circle(object):
+class Circle(Drawing):
     def __init__(self, center, radius, layer, width, board=None):
         self._circle = pcbnew.DRAWSEGMENT(board and board.native_obj)
         self._circle.SetShape(pcbnew.S_CIRCLE)
@@ -63,7 +92,7 @@ class Circle(object):
         return self._circle
 
 
-class Arc(object):
+class Arc(Drawing):
     def __init__(self, center, radius, start_angle, stop_angle, layer, width,
                  board=None):
         start_coord = radius * cmath.exp(math.radians(start_angle - 90) * 1j)
