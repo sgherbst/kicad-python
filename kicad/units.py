@@ -87,13 +87,16 @@ class BaseUnitTuple:
         else:
             raise IndexError
 
-    def __sub__(self, b):
+    def __sub__(self, _b):
+        b = self._class.build_from(_b)
         return self._class(self.native_obj - b.native_obj)
 
-    def __add__(self, b):
+    def __add__(self, _b):
+        b = self._class.build_from(_b)
         return self._class(self.native_obj + b.native_obj)
 
-    def __eq__(self, other):
+    def __eq__(self, _other):
+        other = self._class.build_from(_other)
         return (self.native_obj == other.native_obj)
 
     def __ne__(self, other):
