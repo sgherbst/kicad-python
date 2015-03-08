@@ -18,10 +18,13 @@
 pcbnew = __import__('pcbnew')
 
 import kicad
+from kicad.pcbnew import board
 from kicad.pcbnew import drawing
 from kicad.pcbnew import module
 
-_WRAPPERS = {pcbnew.DRAWSEGMENT: drawing.Drawing,
+
+_WRAPPERS = {pcbnew.BOARD: board.Board,
+             pcbnew.DRAWSEGMENT: drawing.Drawing,
              pcbnew.MODULE: module.Module,
              pcbnew.wxPoint: kicad.Point,
              pcbnew.wxSize: kicad.Size}
