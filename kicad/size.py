@@ -28,14 +28,22 @@ class Size(BaseUnitTuple):
         self._class = Size
         if len(args) == 2:
             x, y = args
-            self._size = pcbnew.wxSize(x * units.DEFAULT_UNIT_IUS,
-                                       y * units.DEFAULT_UNIT_IUS)
+            self._obj = pcbnew.wxSize(x * DEFAULT_UNIT_IUS,
+                                      y * DEFAULT_UNIT_IUS)
         else:
-            self._size = args[0]
+            self._obj = args[0]
 
     @property
     def native_obj(self):
-        return self._size
+        return self._obj
+
+    @staticmethod
+    def build_from(t):
+        return Size._tuple_to_class(t, Size)
+
+    @staticmethod
+    def native_from(t):
+        return Size._tuple_to_class(t, Size).native_obj
 
     def __str__(self):
         return self.__repr__()
