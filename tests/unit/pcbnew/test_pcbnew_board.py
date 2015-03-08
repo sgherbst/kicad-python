@@ -11,6 +11,15 @@ class TestPcbnewBoard(unittest.TestCase):
     def setUp(self):
         self.board = Board()
 
+    def test_module_creation(self):
+        self.board.add_module('M1')
+        self.assertEqual(1, len(list(self.board.modules)))
+        self.board.add_module('M2')
+        self.assertEqual(2, len(list(self.board.modules)))
+        refs = [module.reference for module in self.board.modules]
+        self.assertIn('M1', refs)
+        self.assertIn('M2', refs)
+
     def test_track_segment_creation(self):
         self.board.add_track_segment((0, 0), (1, 1))
         self.board.add_track_segment((0, 0), (1, 1), layer='B.Cu')

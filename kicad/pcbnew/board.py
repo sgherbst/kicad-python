@@ -19,7 +19,7 @@
 pcbnew = __import__('pcbnew')
 
 from kicad.pcbnew import drawing
-from kicad.pcbnew.module import Module
+from kicad.pcbnew import module
 from kicad.pcbnew.track import Track
 from kicad.pcbnew.via import Via
 from kicad import units
@@ -43,10 +43,8 @@ class Board(object):
 
     @property
     def modules(self):
-        m = self._board.GetModules().begin()
-        while m is not None:
-            yield Module(m)
-            m = m.Next()
+        for m in self._board.GetModules():
+            yield module.wrap(m)
 
     @staticmethod
     def from_editor(self):
@@ -66,13 +64,13 @@ class Board(object):
             filename = self._board.GetFileName()
         self._board.Save(filename)
 
-    def create_module(self, ref, position=(0, 0)):
+    def add_module(self, ref, position=(0, 0)):
         """Create new module on the board"""
-        return self.add(Module(ref, position, board=self))
+        return module.Module(ref, position, board=self)
 
     def copy_module(self, original, ref, position=(0, 0)):
         """Create a copy of an existing module on the board"""
-        return self.add(Module.copy(original, board=self))
+        return original.copy(ref, position, board=self)
 
     @property
     def default_width(self, width=None):

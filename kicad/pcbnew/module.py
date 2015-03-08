@@ -17,39 +17,55 @@
 #  MA 02110-1301, USA.
 #
 pcbnew = __import__('pcbnew')
-from kicad import *
 
 
-class Module:
-    def __init__(self, reference=None, position=None, board=None,
-                 module=None):
-        if module:
-            self._module = module
-        else:
-            self._module = pcbnew.MODULE(board)
-            if reference:
-                self.reference = reference
-            if position:
-                self.position = position
-            if board:
-                board.add(self)
+import kicad
+from kicad import Point
+
+
+WRAPPED_CLASSES = [pcbnew.MODULE]
+
+
+def wrap(instance):
+    if type(instance) is pcbnew.MODULE:
+        return kicad.new(Module, instance)
+
+
+class Module(object):
+    def __init__(self, reference=None, position=None, board=None):
+        self._obj = pcbnew.MODULE(board.native_obj)
+        if reference:
+            self.reference = reference
+        if position:
+            self.position = position
+        if board:
+            board.add(self)
 
     @property
     def native_obj(self):
-        return self._module
+        return self._obj
 
     @property
     def reference(self):
-        return self._module.GetReference()
+        return self._obj.GetReference()
 
     @reference.setter
-    def set_reference(self, value):
-        self._module.SetReference(value)
+    def reference(self, value):
+        self._obj.SetReference(value)
 
     @property
     def position(self):
-        return Point(self._module.GetPosition())
+        return Point(self._obj.GetPosition())
 
     @position.setter
-    def set_position(self, value):
-        self._module.SetPosition(Point._from_tuple(value))
+    def position(self, value):
+        self._obj.SetPosition(Point.native_from(value))
+
+    def copy(self, ref, position=(0, 0), board=None):
+        """Create a copy of an existing module on the board"""
+        _module = pcbnew.MODULE(self.board)
+        _module.Copy(self._obj)
+        module = wrap(_module)
+        module.position = position
+        board.add(module)
+        return module
