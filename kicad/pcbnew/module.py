@@ -61,11 +61,14 @@ class Module(object):
     def position(self, value):
         self._obj.SetPosition(Point.native_from(value))
 
-    def copy(self, ref, position=(0, 0), board=None):
+    def copy(self, ref, position=None, board=None):
         """Create a copy of an existing module on the board"""
-        _module = pcbnew.MODULE(self.board)
+        _module = pcbnew.MODULE(board)
         _module.Copy(self._obj)
         module = wrap(_module)
-        module.position = position
-        board.add(module)
+        module.reference = ref
+        if position:
+            module.position = position
+        if board:
+            board.add(module)
         return module
