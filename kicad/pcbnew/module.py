@@ -23,14 +23,6 @@ import kicad
 from kicad import Point
 
 
-WRAPPED_CLASSES = [pcbnew.MODULE]
-
-
-def wrap(instance):
-    if type(instance) is pcbnew.MODULE:
-        return kicad.new(Module, instance)
-
-
 class Module(object):
     def __init__(self, reference=None, position=None, board=None):
         self._obj = pcbnew.MODULE(board.native_obj)
@@ -45,6 +37,11 @@ class Module(object):
     def native_obj(self):
         return self._obj
 
+    @staticmethod
+    def wrap(instance):
+        if type(instance) is pcbnew.MODULE:
+            return kicad.new(Module, instance)
+
     @property
     def reference(self):
         return self._obj.GetReference()
@@ -55,7 +52,7 @@ class Module(object):
 
     @property
     def position(self):
-        return Point(self._obj.GetPosition())
+        return Point.wrap(self._obj.GetPosition())
 
     @position.setter
     def position(self, value):
@@ -65,7 +62,7 @@ class Module(object):
         """Create a copy of an existing module on the board"""
         _module = pcbnew.MODULE(board)
         _module.Copy(self._obj)
-        module = wrap(_module)
+        module = Module.wrap(_module)
         module.reference = ref
         if position:
             module.position = position

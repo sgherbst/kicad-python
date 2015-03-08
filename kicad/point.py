@@ -20,25 +20,29 @@
 #                 or make the wx* objects compatible across bindings
 pcbnew = __import__('pcbnew')
 import cmath
+
+import kicad
 from kicad import units
 
 
 class Point(units.BaseUnitTuple):
 
-    def __init__(self, *args):
+    def __init__(self, x, y):
         self._class = Point
-        if len(args) == 2:
-            x, y = args
-            self._point = pcbnew.wxPoint(x * units.DEFAULT_UNIT_IUS,
-                                         y * units.DEFAULT_UNIT_IUS)
-        else:
-            self._point = args[0]
+        self._obj = pcbnew.wxPoint(x * units.DEFAULT_UNIT_IUS,
+                                   y * units.DEFAULT_UNIT_IUS)
 
     def __str__(self):
         return self.__repr__()
 
     def __repr__(self):
         return "Point(%g, %g)" % (self.x, self.y)
+
+    @staticmethod
+    def wrap(instance):
+        wrapped_point = kicad.new(Point, instance)
+        wrapped_point._class = Point
+        return wrapped_point
 
     @staticmethod
     def build_from(t):
@@ -50,7 +54,7 @@ class Point(units.BaseUnitTuple):
 
     @property
     def native_obj(self):
-        return self._point
+        return self._obj
 
     def rotate(self, angle, around=(0, 0)):
         self.x, self.y = self._rotated(angle, around)

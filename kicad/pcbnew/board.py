@@ -18,6 +18,8 @@
 #
 pcbnew = __import__('pcbnew')
 
+
+import kicad
 from kicad.pcbnew import drawing
 from kicad.pcbnew import module
 from kicad.pcbnew.track import Track
@@ -26,25 +28,27 @@ from kicad import units
 
 
 class Board(object):
-    def __init__(self, board=None):
+    def __init__(self):
         """Convenience wrapper for pcbnew Board"""
-        if board is None:
-            # if no board is given create a new board
-            board = pcbnew.BOARD()
-        self._board = board
+        board = pcbnew.BOARD()
+        self._obj = board
 
     @property
     def native_obj(self):
-        return self._board
+        return self._obj
+
+    @staticmethod
+    def wrap(instance):
+        return kicad.new(Board, instance)
 
     def add(self, obj):
-        self._board.Add(obj.native_obj)
+        self._obj.Add(obj.native_obj)
         return obj
 
     @property
     def modules(self):
-        for m in self._board.GetModules():
-            yield module.wrap(m)
+        for m in self._obj.GetModules():
+            yield module.Module.wrap(m)
 
     @staticmethod
     def from_editor(self):
@@ -61,8 +65,8 @@ class Board(object):
         filename should have .kicad_pcb extention.
         """
         if filename is None:
-            filename = self._board.GetFileName()
-        self._board.Save(filename)
+            filename = self._obj.GetFileName()
+        self._obj.Save(filename)
 
     def add_module(self, ref, position=(0, 0)):
         """Create new module on the board"""
@@ -74,7 +78,7 @@ class Board(object):
 
     @property
     def default_width(self, width=None):
-        b = self._board
+        b = self._obj
         return (
             float(b.GetDesignSettings().GetCurrentTrackWidth()) /
             units.DEFAULT_UNIT_IUS)
@@ -84,11 +88,11 @@ class Board(object):
 
         track = Track(width or self.default_width,
                       start, end, layer, board=self)
-        self._board.Add(track.native_obj)
+        self._obj.Add(track.native_obj)
         return track
 
     def get_layer(self, name):
-        return self._board.GetLayerID(name)
+        return self._obj.GetLayerID(name)
 
     def add_track(self, coords, layer='F.Cu', width=None):
         """Create a track polyline.
@@ -101,12 +105,12 @@ class Board(object):
 
     @property
     def default_via_size(self):
-        return (float(self._board.GetDesignSettings().GetCurrentViaSize()) /
+        return (float(self._obj.GetDesignSettings().GetCurrentViaSize()) /
                 units.DEFAULT_UNIT_IUS)
 
     @property
     def default_via_drill(self):
-        via_drill = self._board.GetDesignSettings().GetCurrentViaDrill()
+        via_drill = self._obj.GetDesignSettings().GetCurrentViaDrill()
         if via_drill > 0:
             return (float(via_drill) / units.DEFAULT_UNIT_IUS)
         else:

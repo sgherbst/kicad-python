@@ -27,9 +27,8 @@ from kicad.pcbnew import layer as pcbnew_layer
 from kicad.point import Point
 from kicad import units
 
-WRAPPED_CLASSES = [pcbnew.DRAWSEGMENT]
 
-
+#TODO(mangelajo): move this to layer module
 def _get_board_layer(board, layer_name):
     if board:
         return board.get_layer(layer_name)
@@ -37,28 +36,28 @@ def _get_board_layer(board, layer_name):
         return pcbnew_layer.get_std_layer(layer_name)
 
 
-def wrap(instance):
-    if type(instance) is pcbnew.DRAWSEGMENT:
-        return _wrap_drawsegment(instance)
-
-
-def _wrap_drawsegment(instance):
-    obj_shape = instance.GetShape()
-
-    if obj_shape is pcbnew.S_SEGMENT:
-        return kicad.new(Segment, instance)
-
-    if obj_shape is pcbnew.S_CIRCLE:
-        return kicad.new(Circle, instance)
-
-    if obj_shape is pcbnew.S_ARC:
-        return kicad.new(Arc, instance)
-
-
 class Drawing(object):
     @property
     def native_obj(self):
         return self._obj
+
+    @staticmethod
+    def wrap(instance):
+        if type(instance) is pcbnew.DRAWSEGMENT:
+            return Drawing._wrap_drawsegment(instance)
+
+    @staticmethod
+    def _wrap_drawsegment(instance):
+        obj_shape = instance.GetShape()
+
+        if obj_shape is pcbnew.S_SEGMENT:
+            return kicad.new(Segment, instance)
+
+        if obj_shape is pcbnew.S_CIRCLE:
+            return kicad.new(Circle, instance)
+
+        if obj_shape is pcbnew.S_ARC:
+            return kicad.new(Arc, instance)
 
 
 class Segment(Drawing):

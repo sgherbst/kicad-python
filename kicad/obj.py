@@ -16,16 +16,23 @@
 #  MA 02110-1301, USA.
 #
 pcbnew = __import__('pcbnew')
-from kicad.pcbnew import drawing as pcbnew_drawing
+
+import kicad
+from kicad.pcbnew import board
+from kicad.pcbnew import drawing
+from kicad.pcbnew import module
 
 
-_WRAPPERS = [(pcbnew_drawing.WRAPPED_CLASSES, pcbnew_drawing.wrap)]
+_WRAPPERS = {pcbnew.BOARD: board.Board,
+             pcbnew.DRAWSEGMENT: drawing.Drawing,
+             pcbnew.MODULE: module.Module,
+             pcbnew.wxPoint: kicad.Point,
+             pcbnew.wxSize: kicad.Size}
 
 
 def wrap(instance):
     """Returns a python wrapped object from a swig/C++ one."""
-    for classes, wrapper in _WRAPPERS:
-        if type(instance) in classes:
-            return wrapper(instance)
+    if type(instance) in _WRAPPERS:
+        return _WRAPPERS[type(instance)].wrap(instance)
 
     raise ValueError("Class with no wrapper: %s" % type(instance))
