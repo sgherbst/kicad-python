@@ -55,7 +55,7 @@ def mm_to_inch(val):
         return [mm_to_inch(v) for v in val]
 
 
-class BaseUnitTuple:
+class BaseUnitTuple(object):
     """Base class to provide mm, inch, mil properties.
 
     It's a class to be used just by Point and Size.

@@ -14,25 +14,17 @@ class TestKicadUnits(unittest.TestCase):
         self.assertEqual(mm_to_inch([25.4, 50.8]), [1.0, 2.0])
 
     def test_base_unit_tuple_mm(self):
-        bunit = BaseUnitTuple()
-        bunit.x = 1
-        bunit.y = 2
+        bunit = Point(1, 2)
         self.assertEqual(bunit.mm, (1.0, 2.0))
 
     def test_base_unit_tuple_inch(self):
-        bunit = BaseUnitTuple()
-        bunit.x = 1 * inch
-        bunit.y = 2 * inch
+        bunit = Point(1 * inch, 2 * inch)
         self.assertEqual(bunit.inch, (1.0, 2.0))
 
     def test_base_unit_tuple_mil(self):
-        bunit = BaseUnitTuple()
-        bunit.x = 1 * mil
-        bunit.y = 2 * mil
+        bunit = Point(1 * mil, 2 * mil)
         self.assertEqual(bunit.mil, (1.0, 2.0))
 
     def test_base_unit_tuple_nm(self):
-        bunit = BaseUnitTuple()
-        bunit.x = 1 * nm
-        bunit.y = 2 * nm
+        bunit = Point(1 * nm, 2 * nm)
         self.assertEqual(bunit.nm, (1, 2))

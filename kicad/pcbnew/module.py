@@ -55,7 +55,7 @@ class Module(object):
 
     @property
     def position(self):
-        return Point(self._obj.GetPosition())
+        return Point.wrap(self._obj.GetPosition())
 
     @position.setter
     def position(self, value):

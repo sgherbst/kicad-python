@@ -19,19 +19,24 @@
 #TODO(mangelajo): we will have to come with something more generic
 #                 or make the wx* objects compatible across bindings
 pcbnew = __import__('pcbnew')
+import kicad
+
 from kicad.units import *
 
 
 class Size(BaseUnitTuple):
 
-    def __init__(self, *args):
+    def __init__(self, width, height):
         self._class = Size
-        if len(args) == 2:
-            x, y = args
-            self._obj = pcbnew.wxSize(x * DEFAULT_UNIT_IUS,
-                                      y * DEFAULT_UNIT_IUS)
-        else:
-            self._obj = args[0]
+        self._obj = pcbnew.wxSize(width * DEFAULT_UNIT_IUS,
+                                  height * DEFAULT_UNIT_IUS)
+
+    @staticmethod
+    def wrap(instance):
+        """Takes a wxSize instance and returns a Size class."""
+        wrapped_size = kicad.new(Size, instance)
+        wrapped_size._class = Size
+        return wrapped_size
 
     @property
     def native_obj(self):
