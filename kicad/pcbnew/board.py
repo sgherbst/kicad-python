@@ -44,7 +44,7 @@ class Board(object):
     @property
     def modules(self):
         for m in self._board.GetModules():
-            yield module.wrap(m)
+            yield module.Module.wrap(m)
 
     @staticmethod
     def from_editor(self):
