@@ -1,5 +1,5 @@
-Size Class
-==========
+size
+====
 
 .. automodule:: kicad
 
