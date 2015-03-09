@@ -40,23 +40,41 @@ class Point(units.BaseUnitTuple):
 
     @staticmethod
     def wrap(instance):
+        """Wraps a wxPoint object from pcbnew and returns a Point one.
+
+        This function should not be generally used, but it's provided as
+        a helper when migrating old API code.
+        """
         wrapped_point = kicad.new(Point, instance)
         wrapped_point._class = Point
         return wrapped_point
 
     @staticmethod
     def build_from(t):
+        """Return a point object from a tuple.
+
+        It can transparently receive either a Point or a tuple,
+        and a Point object will always be returned.
+        """
         return Point._tuple_to_class(t, Point)
 
     @staticmethod
     def native_from(t):
+        """Return a native C++/old API object from a tuple/Point.
+
+        Generally not to be used, but provided for compatibility
+        when migrating from old API code.
+        """
         return Point._tuple_to_class(t, Point).native_obj
 
     @property
     def native_obj(self):
+        """Returns the native wxPoint object Point is wrapping."""
         return self._obj
 
     def rotate(self, angle, around=(0, 0)):
+        """Rotate the point.
+        """
         self.x, self.y = self._rotated(angle, around)
 
     def rotated(self, angle, around=(0, 0)):

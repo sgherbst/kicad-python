@@ -11,13 +11,13 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-.. automodule:: kicad
+   kicad/point
+   kicad/size
+   kicad/obj
+   kicad/pcbnew/board
+   kicad/pcbnew/module
+   kicad/pcbnew/api
 
-.. autoclass:: Point
-   :members: x, y, rotate, rotated, mm, inch, mil, nm
-
-.. autoclass:: Size
-   :members: x, y, scale, scaled, mm, inch, mil, nm
 
 Indices and tables
 ==================
