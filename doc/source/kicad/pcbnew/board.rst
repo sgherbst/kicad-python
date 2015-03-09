@@ -1,5 +1,5 @@
-Board Class
-===========
+board
+=====
 
 .. automodule:: kicad.pcbnew.board
 

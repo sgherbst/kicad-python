@@ -8,16 +8,16 @@ Welcome to KiCad Python API's documentation!
 
 Contents:
 
+kicad
+-----
+
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    kicad/point
    kicad/size
    kicad/obj
-   kicad/pcbnew/board
-   kicad/pcbnew/module
-   kicad/pcbnew/api
-
+   kicad/pcbnew/index
 
 Indices and tables
 ==================

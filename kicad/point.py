@@ -28,6 +28,11 @@ from kicad import units
 class Point(units.BaseUnitTuple):
 
     def __init__(self, x, y):
+        """Creates a point.
+
+        :param x: x coordinate.
+        :param y: y coordinate.
+        """
         self._class = Point
         self._obj = pcbnew.wxPoint(x * units.DEFAULT_UNIT_IUS,
                                    y * units.DEFAULT_UNIT_IUS)
@@ -44,6 +49,10 @@ class Point(units.BaseUnitTuple):
 
         This function should not be generally used, but it's provided as
         a helper when migrating old API code.
+
+        :param instance: input wxPoint to wrap.
+        :type instance: wxPoint
+        :return: Point
         """
         wrapped_point = kicad.new(Point, instance)
         wrapped_point._class = Point
@@ -74,10 +83,19 @@ class Point(units.BaseUnitTuple):
 
     def rotate(self, angle, around=(0, 0)):
         """Rotate the point.
+
+        :param angle: rotation angle in degrees.
+        :param around: rotation center.
         """
         self.x, self.y = self._rotated(angle, around)
 
     def rotated(self, angle, around=(0, 0)):
+        """Generate a new Point.
+
+        :param angle: rotation angle in degrees.
+        :param around: rotation center.
+        :returns: Point
+        """
         x, y = self._rotated(angle, around)
         return Point(x, y)
 

@@ -62,6 +62,7 @@ class BaseUnitTuple(object):
     """
     @property
     def x(self):
+        """x coordinate."""
         return float(self.native_obj.x) / DEFAULT_UNIT_IUS
 
     @x.setter
@@ -70,6 +71,7 @@ class BaseUnitTuple(object):
 
     @property
     def y(self):
+        """y coordinate."""
         return float(self.native_obj.y) / DEFAULT_UNIT_IUS
 
     @y.setter
@@ -112,11 +114,21 @@ class BaseUnitTuple(object):
 
     @property
     def nm(self):
+        """Get the nanometers tuple."""
         return self._unit_tuple(nm)
 
     @property
     def mm(self):
-        """Get the milimeters tuple."""
+        """Get the milimeters tuple.
+
+        :Example:
+
+        >>> import kicad
+        >>> p = kicad.Point(1, 2)
+        >>> p.mm
+        (1, 2)
+
+        """
         return (self.x, self.y)
 
     @property
