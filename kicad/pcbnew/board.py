@@ -29,7 +29,7 @@ from kicad import units
 
 class Board(object):
     def __init__(self):
-        """Convenience wrapper for pcbnew Board"""
+        """Board object"""
         board = pcbnew.BOARD()
         self._obj = board
 
@@ -39,25 +39,32 @@ class Board(object):
 
     @staticmethod
     def wrap(instance):
+        """Wraps a C++/old api BOARD object, and returns a Board."""
         return kicad.new(Board, instance)
 
     def add(self, obj):
+        """Adds an object to the Board.
+
+        Tracks, Drawings, Modules, etc...
+        """
         self._obj.Add(obj.native_obj)
         return obj
 
     @property
     def modules(self):
+        """Provides an iterator over the board Module objects."""
         for m in self._obj.GetModules():
             yield module.Module.wrap(m)
 
     @staticmethod
     def from_editor(self):
-        return Board(board=pcbnew.GetCurrentBoard())
+        """Provides the board object from the editor."""
+        return Board.wrap(pcbnew.GetCurrentBoard())
 
     @staticmethod
     def load(self, filename):
-        """Save a board file."""
-        return Board(pcbnew.LoadBoard(filename))
+        """Loads a board file."""
+        return Board.wrap(pcbnew.LoadBoard(filename))
 
     def save(self, filename=None):
         """Save the board to a file.
@@ -71,10 +78,6 @@ class Board(object):
     def add_module(self, ref, position=(0, 0)):
         """Create new module on the board"""
         return module.Module(ref, position, board=self)
-
-    def copy_module(self, original, ref, position=(0, 0)):
-        """Create a copy of an existing module on the board"""
-        return original.copy(ref, position, board=self)
 
     @property
     def default_width(self, width=None):
@@ -118,14 +121,14 @@ class Board(object):
 
     def add_via(self, coord, layer_pair=('B.Cu', 'F.Cu'), size=None,
                 drill=None):
-        """Create a via on the board
+        """Create a via on the board.
 
-        Args:
-            coord: Position of the via
-            layer_pair: Tuple of the connected layers (for example
-                        ('B.Cu', 'F.Cu'))
-            size: size of via in mm, or None for current selection
-            drill: size of drill in mm, or None for current selection
+        :param coord: Position of the via.
+        :param layer_pair: Tuple of the connected layers (for example
+                           ('B.Cu', 'F.Cu')).
+        :param size: size of via in mm, or None for current selection.
+        :param drill: size of drill in mm, or None for current selection.
+        :returns: the created Via
         """
         return self.add(
             Via(coord, layer_pair, size or self.default_via_size,
