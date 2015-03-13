@@ -24,10 +24,10 @@ from kicad import Point
 
 
 class Module(object):
-    def __init__(self, reference=None, pos=None, board=None):
+    def __init__(self, ref=None, pos=None, board=None):
         self._obj = pcbnew.MODULE(board.native_obj)
-        if reference:
-            self.reference = reference
+        if ref:
+            self.reference = ref
         if pos:
             self.position = pos
         if board:
