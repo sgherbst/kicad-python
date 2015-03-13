@@ -24,12 +24,12 @@ from kicad import Point
 
 
 class Module(object):
-    def __init__(self, reference=None, position=None, board=None):
+    def __init__(self, reference=None, pos=None, board=None):
         self._obj = pcbnew.MODULE(board.native_obj)
         if reference:
             self.reference = reference
-        if position:
-            self.position = position
+        if pos:
+            self.position = pos
         if board:
             board.add(self)
 
@@ -58,14 +58,14 @@ class Module(object):
     def position(self, value):
         self._obj.SetPosition(Point.native_from(value))
 
-    def copy(self, ref, position=None, board=None):
+    def copy(self, ref, pos=None, board=None):
         """Create a copy of an existing module on the board"""
         _module = pcbnew.MODULE(board)
         _module.Copy(self._obj)
         module = Module.wrap(_module)
         module.reference = ref
-        if position:
-            module.position = position
+        if pos:
+            module.position = pos
         if board:
             board.add(module)
         return module

@@ -13,7 +13,7 @@ OTHER_POSITION = (3, 4)
 class TestPcbnewModule(unittest.TestCase):
     def setUp(self):
         self.board = Board()
-        self.module = self.board.add_module(REFERENCE, position=POSITION)
+        self.module = self.board.add_module(REFERENCE, pos=POSITION)
 
     def test_module_reference(self):
         self.assertEqual(REFERENCE, self.module.reference)

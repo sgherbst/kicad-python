@@ -75,9 +75,9 @@ class Board(object):
             filename = self._obj.GetFileName()
         self._obj.Save(filename)
 
-    def add_module(self, ref, position=(0, 0)):
+    def add_module(self, ref, pos=(0, 0)):
         """Create new module on the board"""
-        return module.Module(ref, position, board=self)
+        return module.Module(ref, pos, board=self)
 
     @property
     def default_width(self, width=None):
