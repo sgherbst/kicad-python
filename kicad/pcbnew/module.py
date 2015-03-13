@@ -60,7 +60,7 @@ class Module(object):
 
     def copy(self, ref, pos=None, board=None):
         """Create a copy of an existing module on the board"""
-        _module = pcbnew.MODULE(board)
+        _module = pcbnew.MODULE(board and board._obj)
         _module.Copy(self._obj)
         module = Module.wrap(_module)
         module.reference = ref

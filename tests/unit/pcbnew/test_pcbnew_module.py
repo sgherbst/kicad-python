@@ -29,3 +29,8 @@ class TestPcbnewModule(unittest.TestCase):
         module_copy = self.module.copy(OTHER_REFERENCE)
         self.assertEqual(OTHER_REFERENCE, module_copy.reference)
         self.assertEqual(POSITION, module_copy.position)
+
+    def test_module_copy_in_board_and_position(self):
+        module_copy = self.module.copy(
+            OTHER_REFERENCE, pos=OTHER_POSITION, board=self.board)
+        self.assertEqual(OTHER_POSITION, module_copy.position)
