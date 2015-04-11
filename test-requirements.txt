@@ -13,3 +13,4 @@ oslotest>=1.2.0  # Apache-2.0
 tempest-lib
 flake8
 pylint
+pygments
