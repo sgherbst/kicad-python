@@ -28,14 +28,6 @@ from kicad.point import Point
 from kicad import units
 
 
-#TODO(mangelajo): move this to layer module
-def _get_board_layer(board, layer_name):
-    if board:
-        return board.get_layer(layer_name)
-    else:
-        return pcbnew_layer.get_std_layer(layer_name)
-
-
 class Drawing(object):
     @property
     def native_obj(self):
@@ -66,7 +58,7 @@ class Segment(Drawing):
         line.SetShape(pcbnew.S_SEGMENT)
         line.SetStart(Point.native_from(start))
         line.SetEnd(Point.native_from(end))
-        line.SetLayer(_get_board_layer(board, layer))
+        line.SetLayer(pcbnew_layer.get_board_layer(board, layer))
         line.SetWidth(int(width * units.DEFAULT_UNIT_IUS))
         self._obj = line
 
@@ -80,7 +72,7 @@ class Circle(Drawing):
         start_coord = Point.native_from(
             (center[0], center[1] + radius))
         circle.SetArcStart(start_coord)
-        circle.SetLayer(_get_board_layer(board, layer))
+        circle.SetLayer(pcbnew_layer.get_board_layer(board, layer))
         circle.SetWidth(int(width * units.DEFAULT_UNIT_IUS))
         self._obj = circle
 
@@ -97,6 +89,6 @@ class Arc(Drawing):
         arc.SetCenter(Point.native_from(center))
         arc.SetArcStart(start_coord)
         arc.SetAngle(angle * 10)
-        arc.SetLayer(_get_board_layer(board, layer))
+        arc.SetLayer(pcbnew_layer.get_board_layer(board, layer))
         arc.SetWidth(int(width * units.DEFAULT_UNIT_IUS))
         self._obj = arc

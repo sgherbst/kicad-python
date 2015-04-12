@@ -24,6 +24,13 @@ _std_layer_dict = {pcbnew.BOARD_GetStandardLayerName(n): n
 _std_layer_names = {s: n for n, s in _std_layer_dict.iteritems()}
 
 
+def get_board_layer(board, layer_name):
+    if board:
+        return board.get_layer(layer_name)
+    else:
+        return get_std_layer(layer_name)
+
+
 def get_std_layer(s):
     """Get layer id from layer name
 

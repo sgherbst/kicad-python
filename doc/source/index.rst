@@ -6,7 +6,26 @@
 Welcome to KiCad Python API's documentation!
 ============================================
 
-Contents:
+KiCad Python API is designed to let you interact design files or extend
+kicad to fit your purposes without the need to write C++ code.
+
+From inside pcbnew you are able to recover the current Board object like this::
+
+    from kicad.pcbnew import Board
+
+    editor_board = Board.from_editor()
+
+
+From outside, you can load a board file and iterate over modules this way::
+
+    from kicad.pcbnew import Board
+
+    my_board = Board.load('my_board.kicad_pcb')
+
+    for module in my_board.modules:
+        print "module %(ref)s @ pos %(position)s" % { 'ref': module.reference,
+                                                      'position': module.position }
+
 
 kicad
 -----
