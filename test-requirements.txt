@@ -14,3 +14,4 @@ tempest-lib
 flake8
 pylint
 pygments
+sphinx_rtd_theme

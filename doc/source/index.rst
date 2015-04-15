@@ -23,9 +23,9 @@ From outside, you can load a board file and iterate over modules this way::
     my_board = Board.load('my_board.kicad_pcb')
 
     for module in my_board.modules:
-        print "module %(ref)s @ pos %(position)s" % { 'ref': module.reference,
-                                                      'position': module.position }
-
+        data = {'reference': module.reference,
+                'position': module.position}
+        print "module %(reference)s is at %(position)s" % data
 
 kicad
 -----
@@ -35,7 +35,7 @@ kicad
 
    kicad/point
    kicad/size
-   kicad/obj
+   # kicad/obj
    kicad/pcbnew/index
 
 Indices and tables
