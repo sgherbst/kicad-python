@@ -17,6 +17,7 @@
 #  MA 02110-1301, USA.
 #
 pcbnew = __import__('pcbnew')
+import kicad
 
 # dicts for converting layer name to id, used by _get_layer
 _std_layer_dict = {pcbnew.BOARD_GetStandardLayerName(n): n
@@ -25,18 +26,32 @@ _std_layer_names = {s: n for n, s in _std_layer_dict.iteritems()}
 
 
 def get_board_layer(board, layer_name):
+    """Get layer id for layer name in board, or std."""
     if board:
         return board.get_layer(layer_name)
     else:
         return get_std_layer(layer_name)
 
 
-def get_std_layer(s):
+def get_board_layer_name(board, layer_id):
+    """Get layer name for layer_id in board, or std."""
+    if board:
+        return board.get_layer_name(layer_id)
+    else:
+        return get_std_layer_name(layer_id)
+
+
+def get_std_layer_name(layer_id):
+    """Get layer name from layer id. """
+    return _std_layer_names[layer_id]
+
+
+def get_std_layer(layer_name):
     """Get layer id from layer name
 
     If it is already an int just return it.
     """
-    return _std_layer_dict[s]
+    return _std_layer_dict[layer_name]
 
 
 class LayerSet:
@@ -44,21 +59,38 @@ class LayerSet:
         self._board = board
         self._build_layer_set(layers)
 
+    @property
+    def native_obj(self):
+        return self._obj
+
+    @staticmethod
+    def wrap(instance):
+        return kicad.new(LayerSet, instance)
+
     def _build_layer_set(self, layers):
         """Create LayerSet used for defining pad layers"""
-        bitset = 0
+        bit_mask = 0
         for layer_name in layers:
             if self._board:
-                bitset |= 1 << self._board.get_layer(layer_name)
+                bit_mask |= 1 << self._board.get_layer(layer_name)
             else:
-                bitset |= 1 << get_std_layer(layer_name)
-        hexset = '{0:013x}'.format(bitset)
-        self.lset = pcbnew.LSET()
-        self.lset.ParseHex(hexset, len(hexset))
+                bit_mask |= 1 << get_std_layer(layer_name)
+        hex_mask = '{0:013x}'.format(bit_mask)
+        self._obj = pcbnew.LSET()
+        self._obj.ParseHex(hex_mask, len(hex_mask))
 
+    @property
+    def layer_names(self):
+        return [get_board_layer_name(self._board, layer_id)
+                for layer_id in self.layers]
 
-#def LayerSet(layerset):
-#    mask = [c for c in layerset.FmtBin() if c in ('0','1')]
-#    mask.reverse()
-#    ids = [i for i, c in enumerate(mask) if c == '1']
-#    return tuple(layer_names[i] for i in ids)
+    @property
+    def layers(self):
+        layer_ids = []
+        bin_str = self._obj.FmtBin().replace('_', '').replace('|', '')
+        bit_pos = len(bin_str) - 1
+        for bit in bin_str:
+            if bit == '1':
+                layer_ids.append(bit_pos)
+            bit_pos -= 1
+        return layer_ids
