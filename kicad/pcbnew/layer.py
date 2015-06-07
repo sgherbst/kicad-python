@@ -55,9 +55,9 @@ def get_std_layer(layer_name):
 
 
 class LayerSet:
-    def __init__(self, layers, board=None):
+    def __init__(self, layer_names, board=None):
         self._board = board
-        self._build_layer_set(layers)
+        self._build_layer_set(layer_names)
 
     @property
     def native_obj(self):
@@ -65,6 +65,7 @@ class LayerSet:
 
     @staticmethod
     def wrap(instance):
+        """Wraps a C++/old api LSET object, and returns a LayerSet."""
         return kicad.new(LayerSet, instance)
 
     def _build_layer_set(self, layers):
@@ -81,11 +82,13 @@ class LayerSet:
 
     @property
     def layer_names(self):
+        """Returns the list of layer names in this LayerSet."""
         return [get_board_layer_name(self._board, layer_id)
                 for layer_id in self.layers]
 
     @property
     def layers(self):
+        """Returns the list of Layer IDs in this LayerSet."""
         layer_ids = []
         bin_str = self._obj.FmtBin().replace('_', '').replace('|', '')
         bit_pos = len(bin_str) - 1
