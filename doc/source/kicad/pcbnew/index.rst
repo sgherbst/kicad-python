@@ -7,4 +7,5 @@ pcbnew
     board
     module
     drawing
+    layer
 
