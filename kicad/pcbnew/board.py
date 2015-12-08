@@ -59,7 +59,7 @@ class Board(object):
     @staticmethod
     def from_editor():
         """Provides the board object from the editor."""
-        return Board.wrap(pcbnew.GetCurrentBoard())
+        return Board.wrap(pcbnew.GetBoard())
 
     @staticmethod
     def load(filename):
