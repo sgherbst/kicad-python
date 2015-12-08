@@ -56,6 +56,11 @@ class Board(object):
         for m in self._obj.GetModules():
             yield module.Module.wrap(m)
 
+    def moduleByRef(self, ref):
+        for m in self.modules:
+            if m.reference == ref:
+                return m
+
     @property
     def vias(self):
         """An iterator over via objects"""
