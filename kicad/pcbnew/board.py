@@ -57,12 +57,12 @@ class Board(object):
             yield module.Module.wrap(m)
 
     @staticmethod
-    def from_editor(self):
+    def from_editor():
         """Provides the board object from the editor."""
         return Board.wrap(pcbnew.GetCurrentBoard())
 
     @staticmethod
-    def load(self, filename):
+    def load(filename):
         """Loads a board file."""
         return Board.wrap(pcbnew.LoadBoard(filename))
 
