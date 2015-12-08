@@ -37,7 +37,7 @@ class Via(object):
             self._obj.SetLayerPair(layer.get_std_layer(layer_pair[0]),
                                    layer.get_std_layer(layer_pair[1]))
 
-        self._obj.SetDrill(int(drill * units.DEFAULT_UNIT_IUS))
+        self.drill = drill
 
     @property
     def native_obj(self):
@@ -47,3 +47,12 @@ class Via(object):
     def wrap(instance):
         """Wraps a C++ api VIA object, and returns a `Via`."""
         return kicad.new(Via, instance)
+
+    @property
+    def drill(self):
+        """Via drill"""
+        return float(self._obj.GetDrill()) / units.DEFAULT_UNIT_IUS
+
+    @drill.setter
+    def drill(self, value):
+        self._obj.SetDrill(int(value * units.DEFAULT_UNIT_IUS))
