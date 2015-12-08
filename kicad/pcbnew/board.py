@@ -56,6 +56,15 @@ class Board(object):
         for m in self._obj.GetModules():
             yield module.Module.wrap(m)
 
+    @property
+    def vias(self):
+        """An iterator over via objects"""
+        for t in self._obj.GetTracks():
+            if type(t) == pcbnew.VIA:
+                yield Via.wrap(t)
+            else:
+                continue
+
     @staticmethod
     def from_editor():
         """Provides the board object from the editor."""
