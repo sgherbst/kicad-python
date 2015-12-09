@@ -21,9 +21,10 @@ pcbnew = __import__('pcbnew')
 
 import kicad
 from kicad import Point
+from kicad.pcbnew.item import HasPosition
 
+class Module(HasPosition, object):
 
-class Module(object):
     def __init__(self, ref=None, pos=None, board=None):
         self._obj = pcbnew.MODULE(board.native_obj)
         if ref:
@@ -49,14 +50,6 @@ class Module(object):
     @reference.setter
     def reference(self, value):
         self._obj.SetReference(value)
-
-    @property
-    def position(self):
-        return Point.wrap(self._obj.GetPosition())
-
-    @position.setter
-    def position(self, value):
-        self._obj.SetPosition(Point.native_from(value))
 
     def copy(self, ref, pos=None, board=None):
         """Create a copy of an existing module on the board"""
