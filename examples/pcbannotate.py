@@ -38,7 +38,7 @@ import codecs
 b = Board.from_editor()
 
 mods = list(b.modules)
-mods = sorted(mods, key=attrgetter('y', 'x'))
+mods = sorted(mods, key=attrgetter('layer', 'y', 'x'))
 
 ref_counter = {} # dictionary of reference names
 changes = [] # a list of tuples
