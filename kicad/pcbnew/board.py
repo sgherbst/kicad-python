@@ -89,6 +89,12 @@ class Board(object):
             filename = self._obj.GetFileName()
         self._obj.Save(filename)
 
+    # TODO: add setter for Board.filename
+    @property
+    def filename(self):
+        """Name of the board file."""
+        return self._obj.GetFileName()
+
     def add_module(self, ref, pos=(0, 0)):
         """Create new module on the board"""
         return module.Module(ref, pos, board=self)
