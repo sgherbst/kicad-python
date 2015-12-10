@@ -18,10 +18,10 @@
 #
 pcbnew = __import__('pcbnew')
 
-
 import kicad
 from kicad import Point
 from kicad.pcbnew.item import HasPosition
+from kicad.pcbnew.layer import Layer
 
 class Module(HasPosition, object):
 
@@ -50,6 +50,20 @@ class Module(HasPosition, object):
     @reference.setter
     def reference(self, value):
         self._obj.SetReference(value)
+
+    @property
+    def layer(self):
+        return Layer(self._obj.GetLayer())
+
+    @layer.setter
+    def layer(self, value):
+        if value != self.layer:
+            if value in [Layer.Front, Layer.Back]:
+                # this will make sure all components of the module is
+                # switched to correct layer
+                self._obj.Flip(self._obj.GetCenter())
+            else:
+                raise ValueError("You can place a module only on Front or Back layers!")
 
     def copy(self, ref, pos=None, board=None):
         """Create a copy of an existing module on the board"""
