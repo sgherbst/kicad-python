@@ -57,9 +57,11 @@ class Board(object):
             yield module.Module.wrap(m)
 
     def moduleByRef(self, ref):
-        for m in self.modules:
-            if m.reference == ref:
-                return m
+        """Returns the module that has the reference `ref`. Returns `None` if
+        there is no such module."""
+        found = self._obj.FindModuleByReference(ref)
+        if found:
+            return module.Module.wrap(found)
 
     @property
     def vias(self):
