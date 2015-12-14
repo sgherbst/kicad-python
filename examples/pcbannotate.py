@@ -29,7 +29,7 @@
 #
 
 from kicad.pcbnew.board import Board
-from operator import attrgetter
+from kicad.pcbnew.layer import Layer
 import re
 import glob
 import os
@@ -38,7 +38,17 @@ import codecs
 b = Board.from_editor()
 
 mods = list(b.modules)
-mods = sorted(mods, key=attrgetter('layer', 'y', 'x'))
+
+def sortkeys(mod):
+    if mod.layer == Layer.Front:
+        return (mod.layer, mod.y, mod.x)
+    else: # Layer.Back
+        # Components in the back are sorted from right to
+        # left according to their canvas position. When you flip the
+        # board at your hand, they will be sorted 'left to right'.
+        return (mod.layer, mod.y, -mod.x)
+
+mods = sorted(mods, key=sortkeys)
 
 ref_counter = {} # dictionary of reference names
 changes = [] # a list of tuples
