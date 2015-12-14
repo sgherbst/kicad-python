@@ -68,30 +68,33 @@ for mod in mods:
     mod.reference = next_ref
     changes.append((prev_ref, next_ref))
 
-b.save()
-print("PCB annotated.")
+if changes:
+    b.save()
+    print("PCB annotated.")
 
-# PCB annotation completed, now back-annotate schematics
+    # PCB annotation completed, now back-annotate schematics
 
-# prepare replacer
-changes = dict(changes)
+    # prepare replacer
+    changes = dict(changes)
 
-def replacer(match):
-    return changes[match.group(0)]
+    def replacer(match):
+        return changes[match.group(0)]
 
-regx = re.compile('|'.join(r'\b%s\b' % k for k in changes.keys()))
+    regx = re.compile('|'.join(r'\b%s\b' % k for k in changes.keys()))
 
-# get a list of schematic files by globbing
-directory = os.path.dirname(b.filename)
-sch_files = glob.glob(directory + '/*.sch')
+    # get a list of schematic files by globbing
+    directory = os.path.dirname(b.filename)
+    sch_files = glob.glob(directory + '/*.sch')
 
-for sch_file in sch_files:
-    print("Updating %s..." % sch_file)
-    # read file
-    s = codecs.open(sch_file, mode='r+', encoding='utf-8').read()
+    for sch_file in sch_files:
+        print("Updating %s..." % sch_file)
+        # read file
+        s = codecs.open(sch_file, mode='r+', encoding='utf-8').read()
 
-    # make changes
-    s = regx.sub(replacer, s)
+        # make changes
+        s = regx.sub(replacer, s)
 
-    # update file contents
-    codecs.open(sch_file, mode='w', encoding='utf-8').write(s)
+        # update file contents
+        codecs.open(sch_file, mode='w', encoding='utf-8').write(s)
+else:
+    print("No changes were made! This is normal if your components were already named in correct order.")
