@@ -45,12 +45,13 @@ changes = [] # a list of tuples
 
 for mod in mods:
     prev_ref = mod.reference
-    m = re.match('^((?:[a-zA-Z_\d]+[a-zA-Z_])|(?:[a-zA-Z_]+))(\d+)$', prev_ref).groups()
+    m = re.match('^((?:[a-zA-Z_\d]+[a-zA-Z_])|(?:[a-zA-Z_]+))(\d+)$', prev_ref)
 
     if m:
-        name, number = m  # for ex: R16 -> name:'R' , number: '16'
+        name, number = m.groups()  # for ex: R16 -> name:'R' , number: '16'
     else:
         print("Skipping: %s." % prev_ref)
+        continue
 
     if name in ref_counter:
         next_ref = name + str(ref_counter[name]+1)
