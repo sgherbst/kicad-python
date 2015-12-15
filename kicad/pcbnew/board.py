@@ -26,12 +26,39 @@ from kicad.pcbnew.track import Track
 from kicad.pcbnew.via import Via
 from kicad import units
 
+class _ModuleList(object):
+    """Internal class to represent `Board.modules`"""
+    def __init__(self, board):
+        self._board = board
+
+    def __getitem__(self, key):
+        found = self._board._obj.FindModuleByReference(key)
+        if found:
+            return module.Module.wrap(found)
+        else:
+            raise KeyError("No module with reference: %s" % key)
+
+    def __iter__(self):
+        # Note: this behavior is inconsistent with python manuals
+        # suggestion. Manual suggests that a mapping should iterate
+        # over keys ('reference' in our case). See:
+        # https://docs.python.org/2.7/reference/datamodel.html?emulating-container-types#object.__iter__
+        # But in my opinion `_ModuleList` is a list then mapping.
+        for m in self._board._obj.GetModules():
+            yield module.Module.wrap(m)
+
+    def __len__(self):
+        return self._board._obj.GetModules().GetCount()
 
 class Board(object):
-    def __init__(self):
+    def __init__(self, wrap=None):
         """Board object"""
-        board = pcbnew.BOARD()
-        self._obj = board
+        if wrap:
+            self._obj = wrap
+        else:
+            self._obj = pcbnew.BOARD()
+
+        self._modulelist = _ModuleList(self)
 
     @property
     def native_obj(self):
@@ -40,7 +67,7 @@ class Board(object):
     @staticmethod
     def wrap(instance):
         """Wraps a C++/old api BOARD object, and returns a Board."""
-        return kicad.new(Board, instance)
+        return Board(wrap=instance)
 
     def add(self, obj):
         """Adds an object to the Board.
@@ -53,8 +80,7 @@ class Board(object):
     @property
     def modules(self):
         """Provides an iterator over the board Module objects."""
-        for m in self._obj.GetModules():
-            yield module.Module.wrap(m)
+        return self._modulelist
 
     def moduleByRef(self, ref):
         """Returns the module that has the reference `ref`. Returns `None` if
