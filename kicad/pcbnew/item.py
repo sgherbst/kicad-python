@@ -18,6 +18,7 @@
 #  MA 02110-1301, USA.
 #
 
+from math import radians, degrees
 from kicad.point import Point
 
 class HasPosition(object):
@@ -50,3 +51,17 @@ class HasPosition(object):
     @y.setter
     def y(self, value):
         self.position = (self.x, value)
+
+class HasRotation(object):
+    """Board items that has rotation property should inherit this."""
+    def __init__(self):
+        raise NotImplementedError("This is an abstract class!")
+
+    @property
+    def rotation(self):
+        """Rotation of the item in radians."""
+        return radians(self._obj.GetOrientation() / 10.)
+
+    @rotation.setter
+    def rotation(self, value):
+        self._obj.SetOrientation(degrees(value) * 10.)

@@ -20,10 +20,10 @@ pcbnew = __import__('pcbnew')
 
 import kicad
 from kicad import Point
-from kicad.pcbnew.item import HasPosition
+from kicad.pcbnew.item import HasPosition, HasRotation
 from kicad.pcbnew.layer import Layer
 
-class Module(HasPosition, object):
+class Module(HasPosition, HasRotation, object):
 
     def __init__(self, ref=None, pos=None, board=None):
         self._obj = pcbnew.MODULE(board.native_obj)
