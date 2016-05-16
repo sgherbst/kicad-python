@@ -98,6 +98,15 @@ class Board(object):
             else:
                 continue
 
+    @property
+    def tracks(self):
+        """An iterator over track objects"""
+        for t in self._obj.GetTracks():
+            if type(t) == pcbnew.TRACK:
+                yield Track.wrap(t)
+            else:
+                continue
+
     @staticmethod
     def from_editor():
         """Provides the board object from the editor."""
