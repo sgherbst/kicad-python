@@ -27,6 +27,13 @@ class DrillShape(IntEnum):
     Circle = pcbnew.PAD_DRILL_SHAPE_CIRCLE
     Oval = pcbnew.PAD_DRILL_SHAPE_OBLONG
 
+class PadShape(IntEnum):
+    Circle = pcbnew.PAD_SHAPE_CIRCLE
+    Oval = pcbnew.PAD_SHAPE_OVAL
+    Rectangle = pcbnew.PAD_SHAPE_RECT
+    RoundedRectangle = pcbnew.PAD_SHAPE_ROUNDRECT
+    Trapezoid = pcbnew.PAD_SHAPE_TRAPEZOID
+
 class Pad(HasPosition, object):
     def __init__(self):
         # TODO: add initialization parameters for `Pad`
@@ -76,3 +83,12 @@ class Pad(HasPosition, object):
         else: # value is a single number/integer
             drillShape = DrillShape.Circle
             self._obj.SetDrillSize(Size(value, value).native_obj())
+
+    @property
+    def shape(self):
+        return PadShape(self._obj.GetShape())
+
+    @shape.setter
+    def shape(self, value):
+        """Value must be of type `PadShape`."""
+        self._obj.SetShape(value)
