@@ -59,14 +59,8 @@ class Pad(HasPosition, object):
 
     @property
     def drill(self):
-        """Drill size. If pad shape is circle returns a single float, if drill
-        shape is oval, returns `Size`."""
-        size = Size.wrap(self._obj.GetDrillSize())
-
-        if self.drillShape == DrillShape.Circle:
-            return size.width
-        else: # oval
-            return size
+        """Drill size. Returns `Size`."""
+        return Size.wrap(self._obj.GetDrillSize())
 
     @drill.setter
     def drill(self, value):
