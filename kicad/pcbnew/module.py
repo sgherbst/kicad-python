@@ -1,5 +1,6 @@
 #  Copyright 2014 Piers Titus van der Torren <pierstitus@gmail.com>
 #  Copyright 2015 Miguel Angel Ajo <miguelangel@ajo.es>
+#  Copyright 2016 Hasan Yavuz Ozderya <hy@ozderya.net>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,6 +23,7 @@ import kicad
 from kicad import Point
 from kicad.pcbnew.item import HasPosition, HasRotation
 from kicad.pcbnew.layer import Layer
+from kicad.pcbnew.pad import Pad
 
 class Module(HasPosition, HasRotation, object):
 
@@ -76,3 +78,8 @@ class Module(HasPosition, HasRotation, object):
         if board:
             board.add(module)
         return module
+
+    @property
+    def pads(self):
+        for p in self._obj.Pads():
+            yield Pad.wrap(p)
