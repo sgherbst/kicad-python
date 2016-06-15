@@ -92,3 +92,17 @@ class Pad(HasPosition, object):
     def shape(self, value):
         """Value must be of type `PadShape`."""
         self._obj.SetShape(value)
+
+    @property
+    def size(self):
+        return Size.wrap(self._obj.GetSize())
+
+    @size.setter
+    def size(self, value):
+        if isinstance(value, tuple):
+            if not isinstance(value, Size):
+                value = Size(value[0], value[1])
+            self._obj.SetSize(value.native_obj)
+
+        else: # value is a single number/integer
+            self._obj.SetSize(Size(value, value).native_obj)
