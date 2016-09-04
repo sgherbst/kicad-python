@@ -88,9 +88,15 @@ if changes:
     changes = dict(changes)
 
     def replacer(match):
-        return changes[match.group(0)]
+        ref = match.group(2)
+        if ref in changes:
+            return match.group(1) + changes[ref]
+        else:
+            # not changed
+            return match.group(0)
 
-    regx = re.compile('|'.join(r'\b%s\b' % k for k in changes.keys()))
+    # regex for changing component references
+    regx = re.compile(r'^(L \w+ |F 0 "|AR Path="[/\w]+" Ref=")(\w+)', re.MULTILINE)
 
     # get a list of schematic files by globbing
     directory = os.path.dirname(b.filename)
