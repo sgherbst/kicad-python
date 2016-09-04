@@ -96,7 +96,7 @@ if changes:
             return match.group(0)
 
     # regex for changing component references
-    regx = re.compile(r'^(L \w+ |F 0 "|AR Path="[/\w]+" Ref=")(\w+)', re.MULTILINE)
+    regx = re.compile(r'^(L \S+ |F 0 "|AR Path="[/\w]+" Ref=")(\w+)', re.MULTILINE)
 
     # get a list of schematic files by globbing
     directory = os.path.dirname(b.filename)
