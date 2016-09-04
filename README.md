@@ -6,6 +6,11 @@ feedback to create a less C++ tied API.
 A second intention of this new API is also to provide
 better documentation via sphinx.
 
+## Warning
+
+This library is under development and requires a fairly recent (daily)
+build of KiCad. It may not work with stable versions.
+
 ## How to Use
 
 1. Clone this repository to any location
