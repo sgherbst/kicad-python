@@ -25,6 +25,13 @@ from kicad.pcbnew.item import HasPosition, HasRotation
 from kicad.pcbnew.layer import Layer
 from kicad.pcbnew.pad import Pad
 
+class ModuleLabel(HasPosition, object):
+    """wrapper for `TEXTE_MODULE`"""
+    @staticmethod
+    def wrap(instance):
+        if type(instance) is pcbnew.TEXTE_MODULE:
+            return kicad.new(ModuleLabel, instance)
+
 class Module(HasPosition, HasRotation, object):
 
     def __init__(self, ref=None, pos=None, board=None):
@@ -52,6 +59,10 @@ class Module(HasPosition, HasRotation, object):
     @reference.setter
     def reference(self, value):
         self._obj.SetReference(value)
+
+    @property
+    def referenceLabel(self):
+        return ModuleLabel.wrap(self._obj.Reference())
 
     @property
     def layer(self):
