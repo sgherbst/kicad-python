@@ -62,7 +62,21 @@ class Module(HasPosition, HasRotation, object):
 
     @property
     def referenceLabel(self):
+        # TODO: not critical but always return the same wrapper object
         return ModuleLabel.wrap(self._obj.Reference())
+
+    @property
+    def value(self):
+        return self._obj.GetValue()
+
+    @value.setter
+    def value(self, value):
+        self._obj.SetValue(value)
+
+    @property
+    def valueLabel(self):
+        # TODO: not critical but always return the same wrapper object
+        return ModuleLabel.wrap(self._obj.Value())
 
     @property
     def layer(self):
