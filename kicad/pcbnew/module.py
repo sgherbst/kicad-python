@@ -25,7 +25,7 @@ from kicad.pcbnew.item import HasPosition, HasRotation
 from kicad.pcbnew.layer import Layer
 from kicad.pcbnew.pad import Pad
 
-class ModuleLabel(HasPosition, object):
+class ModuleLabel(HasPosition, HasRotation, object):
     """wrapper for `TEXTE_MODULE`"""
     @staticmethod
     def wrap(instance):
