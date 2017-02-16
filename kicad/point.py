@@ -24,7 +24,60 @@ import cmath
 import kicad
 from kicad import units
 
+class BoundingBox(object):
+    @staticmethod
+    def wrap(instance):
+        wrapped_bbox = kicad.new(BoundingBox, instance)
+        wrapped_bbox._class = BoundingBox
 
+        return wrapped_bbox
+
+    @property
+    def top(self):
+        return self._obj.GetTop()/float(units.DEFAULT_UNIT_IUS)
+
+    @property
+    def bottom(self):
+        return self._obj.GetBottom()/float(units.DEFAULT_UNIT_IUS)
+
+    @property
+    def right(self):
+        return self._obj.GetRight()/float(units.DEFAULT_UNIT_IUS)
+
+    @property
+    def left(self):
+        return self._obj.GetLeft()/float(units.DEFAULT_UNIT_IUS)
+
+    @property
+    def center(self):
+        return Point(0.5*(self.left+self.right), 0.5*(self.top+self.bottom))
+
+    @property
+    def ll(self):
+        return Point(self.left, self.bottom)
+
+    @property
+    def ul(self):
+        return Point(self.left, self.top)
+
+    @property
+    def ur(self):
+        return Point(self.right, self.top)
+
+    @property
+    def lr(self):
+        return Point(self.right, self.bottom)
+
+    @property
+    def width(self):
+        return self.right - self.left
+
+    @property
+    def height(self):
+        # note that Y-values increase as points move *lower* on the screen
+        # hence the flipped order of bottom and top
+        return self.bottom - self.top
+    
 class Point(units.BaseUnitTuple):
 
     def __init__(self, x, y):
@@ -36,6 +89,26 @@ class Point(units.BaseUnitTuple):
         self._class = Point
         self._obj = pcbnew.wxPoint(x * units.DEFAULT_UNIT_IUS,
                                    y * units.DEFAULT_UNIT_IUS)
+
+    @property
+    def x(self):
+        return self._obj.x/float(units.DEFAULT_UNIT_IUS)
+
+    @property
+    def y(self):
+        return self._obj.y/float(units.DEFAULT_UNIT_IUS)
+
+    def __add__(self, other):
+        if isinstance(other, Point):
+            return Point(self.x+other.x, self.y+other.y)
+        else:
+            raise Exception('Unsupported input.')
+
+    def __sub__(self, other):
+        if isinstance(other, Point):
+            return Point(self.x-other.x, self.y-other.y)
+        else:
+            raise Exception('Unsupported input.')
 
     def __str__(self):
         return self.__repr__()

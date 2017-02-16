@@ -20,10 +20,12 @@ pcbnew = __import__('pcbnew')
 
 
 import kicad
+from kicad.point import BoundingBox
 from kicad.pcbnew import drawing
 from kicad.pcbnew import module
 from kicad.pcbnew.track import Track
 from kicad.pcbnew.via import Via
+from kicad.pcbnew.net import Net
 from kicad import units
 
 class _ModuleList(object):
@@ -50,6 +52,25 @@ class _ModuleList(object):
     def __len__(self):
         return self._board._obj.GetModules().GetCount()
 
+class _NetList(object):
+    def __init__(self, board):
+        self._board = board
+
+    def __getitem__(self, key):
+        nets = self._board._obj.GetNetsByName()
+        found = nets.find(key).value()[1]
+        if found:
+            return net.Net.wrap(found)
+        else:
+            raise KeyError("No net with name: %s" % key)
+
+    def __iter__(self):
+        for n in self._board._obj.GetNets():
+            yield net.Net.wrap(n)
+
+    def __len__(self):
+        return self._board._obj.GetNets().GetCount()
+
 class Board(object):
     def __init__(self, wrap=None):
         """Board object"""
@@ -59,6 +80,7 @@ class Board(object):
             self._obj = pcbnew.BOARD()
 
         self._modulelist = _ModuleList(self)
+        self._netlist = _NetList(self)
 
     @property
     def native_obj(self):
@@ -82,12 +104,21 @@ class Board(object):
         """Provides an iterator over the board Module objects."""
         return self._modulelist
 
+    @property
+    def nets(self):
+        """Provides an iterator over the board Net objects."""
+        return self._netlist
+
     def moduleByRef(self, ref):
         """Returns the module that has the reference `ref`. Returns `None` if
         there is no such module."""
         found = self._obj.FindModuleByReference(ref)
         if found:
             return module.Module.wrap(found)
+
+    @property
+    def boundingBox(self):
+        return BoundingBox.wrap(self._obj.ComputeBoundingBox())
 
     @property
     def vias(self):

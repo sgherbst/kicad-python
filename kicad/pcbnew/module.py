@@ -20,7 +20,7 @@
 pcbnew = __import__('pcbnew')
 
 import kicad
-from kicad import Point
+from kicad.point import BoundingBox
 from kicad.pcbnew.item import HasPosition, HasRotation
 from kicad.pcbnew.layer import Layer
 from kicad.pcbnew.pad import Pad
@@ -108,3 +108,7 @@ class Module(HasPosition, HasRotation, object):
     def pads(self):
         for p in self._obj.Pads():
             yield Pad.wrap(p)
+
+    @property
+    def boundingBox(self):
+        return BoundingBox.wrap(self._obj.GetBoundingBox())
