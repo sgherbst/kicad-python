@@ -111,4 +111,4 @@ class Module(HasPosition, HasRotation, object):
 
     @property
     def boundingBox(self):
-        return BoundingBox.wrap(self._obj.GetBoundingBox())
+        return BoundingBox.wrap(self._obj.GetFootprintRect())
