@@ -77,6 +77,10 @@ class BoundingBox(object):
         # note that Y-values increase as points move *lower* on the screen
         # hence the flipped order of bottom and top
         return self.bottom - self.top
+
+    @property
+    def area(self):
+        return self.width*self.height
     
 class Point(units.BaseUnitTuple):
 

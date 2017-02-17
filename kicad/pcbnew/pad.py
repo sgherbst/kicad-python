@@ -111,3 +111,7 @@ class Pad(HasPosition, object):
     @property
     def boundingBox(self):
         return BoundingBox.wrap(self._obj.GetBoundingBox())
+
+    @property
+    def name(self):
+        return str(self._obj.GetPadName())

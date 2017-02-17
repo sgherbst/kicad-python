@@ -108,6 +108,10 @@ class Module(HasPosition, HasRotation, object):
     def pads(self):
         for p in self._obj.Pads():
             yield Pad.wrap(p)
+    
+    @property
+    def padCount(self):
+        return self._obj.GetPadCount()
 
     @property
     def boundingBox(self):
