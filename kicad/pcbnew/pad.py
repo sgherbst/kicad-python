@@ -115,3 +115,7 @@ class Pad(HasPosition, object):
     @property
     def name(self):
         return str(self._obj.GetPadName())
+
+    @property
+    def clearance(self):
+        return float(self._obj.GetClearance())/units.DEFAULT_UNIT_IUS
